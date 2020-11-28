@@ -20,7 +20,6 @@ public class FutureTest {
     @BeforeEach
     public void setUp(){
         future = new Future<>();
-        System.out.println("moshe");
     }
 
     @Test
@@ -41,10 +40,10 @@ public class FutureTest {
     @Test
     public void testGetWithTime(){
         assertFalse(future.isDone());
-        assertNull(future.get(500,TimeUnit.MILLISECONDS));
+        assertNull(future.get(100,TimeUnit.MILLISECONDS));
         assertFalse(future.isDone());
         future.resolve("str");
-        assertEquals(future.get(500,TimeUnit.MILLISECONDS   ),"str");
+        assertEquals(future.get(100,TimeUnit.MILLISECONDS   ),"str");
         assertTrue(future.isDone());
     }
 

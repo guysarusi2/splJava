@@ -35,8 +35,8 @@ public class Future<T> {
             return result;
         } else {
             try {
-                Thread.currentThread().join();
-                //Thread.currentThread().wait();
+                // Thread.currentThread().join();
+                Thread.currentThread().wait();
             } catch (InterruptedException ex) {
             }
             if (isDone)
@@ -73,17 +73,14 @@ public class Future<T> {
      * elapsed, return null.
      */
     public T get(long timeout, TimeUnit unit) {
-        if (isDone) {
-            return result;
-        } else {
-            try {
-                Thread.currentThread().join(unit.toMillis(timeout));
-               // Thread.currentThread().wait(unit.toMillis(timeout));
-            } catch (InterruptedException e) {
-            }
-            if (isDone)
-                return result;
+        if(!isDone){
+            try{
+            Thread.currentThread().join(unit.toMillis(timeout));
+                //Thread.currentThread().wait(unit.toMillis(timeout));
+            } catch (InterruptedException e) {}
         }
+        if (isDone)
+            return result;
         return null;
     }
 

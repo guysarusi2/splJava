@@ -1,4 +1,4 @@
-package bgu.spl.mics.application.passiveObjects;
+/*package bgu.spl.mics.application.passiveObjects;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,4 +23,4 @@ class EwokTest {
     @Test
     void release() {
     }
-}
+}*/
