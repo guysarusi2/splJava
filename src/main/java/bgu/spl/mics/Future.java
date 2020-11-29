@@ -18,8 +18,8 @@ public class Future<T> {
      * This should be the the only public constructor in this class.
      */
     public Future() {
-        result=null;
-        isDone=false;
+        result = null;
+        isDone = false;
     }
 
     /**
@@ -73,11 +73,12 @@ public class Future<T> {
      * elapsed, return null.
      */
     public T get(long timeout, TimeUnit unit) {
-        if(!isDone){
-            try{
-            Thread.currentThread().join(unit.toMillis(timeout));
+        if (!isDone) {
+            try {
+                Thread.currentThread().join(unit.toMillis(timeout));
                 //Thread.currentThread().wait(unit.toMillis(timeout));
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         }
         if (isDone)
             return result;
