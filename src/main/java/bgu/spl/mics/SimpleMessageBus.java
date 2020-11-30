@@ -46,19 +46,22 @@ public class SimpleMessageBus implements MessageBus {
 
     @Override
     public <T> void complete(Event<T> e, T result) {
-        eventFutureMap.get(e).resolve(result);
+        if (eventFutureMap.containsKey(e))
+            eventFutureMap.get(e).resolve(result);
     }
 
     @Override
     public void sendBroadcast(Broadcast b) {
-        MicroService[] a = eventSubsMap.get(b);
-        for (MicroService x : a)
-            subsQueueMap.get(x.getName()).add(b);
+        MicroService[] a = eventSubsMap.get(b.getClass());
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] != null)
+                subsQueueMap.get(a[i].getName()).add(b);
+        }
     }
 
     @Override
     public <T> Future<T> sendEvent(Event<T> e) {
-        MicroService[] a = eventSubsMap.get(e);
+        MicroService[] a = eventSubsMap.get(e.getClass());
         if (a != null) {
             subsQueueMap.get(a[0].getName()).add(e);
             // eventFutureMap.put(e,new Future<T>());

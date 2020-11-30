@@ -34,7 +34,7 @@ class SimpleMessageBusTest {
             mBus.subscribeEvent(event.getClass(), m1);
             assertNotNull(mBus.eventSubsMap.get(event.getClass())[0]);
         } catch (Exception e) {
-            System.out.println("Failsubs: " + e.getMessage());
+            System.out.println("Fail: " + e.getMessage());
         }
     }
 
@@ -49,43 +49,44 @@ class SimpleMessageBusTest {
         }
     }
 
-    // @Test
-//    void complete() {
-//        try {
-//            assertFalse(mBus.eventFutureMap.get(event.getClass()).isDone());
-//            mBus.complete(event, 5);
-//            assertTrue(mBus.eventFutureMap.get(event.getClass()).isDone());
-//            assertEquals(mBus.eventFutureMap.get(event.getClass()).get(), 5);
-//        } catch (Exception e) {
-//            System.out.println("Fail: " + e.getMessage());
-//        }
-//    }
+    @Test
+    void complete() {
+        try {
+            mBus.eventFutureMap.put(event, future);
+            assertFalse(mBus.eventFutureMap.get(event).isDone());
+            mBus.complete(event, 5);
+            assertTrue(mBus.eventFutureMap.get(event).isDone());
+            assertEquals(mBus.eventFutureMap.get(event).get(), 5);
+        } catch (Exception e) {
+            System.out.println("Fail: " + e.getMessage());
+        }
+    }
 
-    //todo fix
-      //  @Test
-  /*  void sendBroadcast() {
+    @Test
+    void sendBroadcast() {
         try {
             assertTrue(mBus.subsQueueMap.get(m1.getName()).isEmpty());
             mBus.subscribeBroadcast(broadcast.getClass(), m1);
             mBus.sendBroadcast(broadcast);
-            assertTrue(mBus.subsQueueMap.get(m1.getName()).isEmpty());
+            assertFalse(mBus.subsQueueMap.get(m1.getName()).isEmpty());
         } catch (Exception e) {
             System.out.println("Fail: " + e.getMessage());
         }
-    }*/
-////
-//    @Test
-//    void sendEvent() {
-//        try {
-//            assertFalse(mBus.subsQueueMap.get(m1.getName()).isEmpty());
-//            mBus.subscribeEvent(event.getClass(), m1);
-//            mBus.sendEvent(event);
-//            assertTrue(!mBus.subsQueueMap.get(m1.getName()).isEmpty());
-//        } catch (Exception e) {
-//            System.out.println("Fail: " + e.getMessage());
-//        }
-//    }
-//
+    }
+
+
+    @Test
+    void sendEvent() {
+        try {
+            assertTrue(mBus.subsQueueMap.get(m1.getName()).isEmpty());
+            mBus.subscribeEvent(event.getClass(), m1);
+            mBus.sendEvent(event);
+            assertFalse(mBus.subsQueueMap.get(m1.getName()).isEmpty());
+        } catch (Exception e) {
+            System.out.println("Fail: " + e.getMessage());
+        }
+    }
+
     @Test
     void register() {
         try {
@@ -96,17 +97,17 @@ class SimpleMessageBusTest {
             System.out.println("Fail: " + e.getMessage());
         }
     }
-//
-//    @Test
-//    void awaitMessage() {
-//        try {
-//            mBus.subscribeEvent(event.getClass(), m1);
-//            mBus.sendEvent(event);
-//            Message tmp= mBus.awaitMessage(m1);
-//            assertNotNull(tmp);
-//            assertEquals(tmp, event); //todo
-//        } catch (Exception e) {
-//            System.out.println("Fail: " + e.getMessage());
-//        }
-//    }
+
+    @Test
+    void awaitMessage() {
+        try {
+            mBus.subscribeEvent(event.getClass(), m1);
+            mBus.sendEvent(event);
+            Message tmp = mBus.awaitMessage(m1);
+            assertNotNull(tmp);
+            assertEquals(tmp, event);
+        } catch (Exception e) {
+            System.out.println("Fail: " + e.getMessage());
+        }
+    }
 }
