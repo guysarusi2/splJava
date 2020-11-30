@@ -22,18 +22,15 @@ public class SimpleMessageBus implements MessageBus {
 
     @Override
     public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-        if (!eventSubsMap.containsKey(type)) {
-            eventSubsMap.put(type, new MicroService[2]);
-            eventSubsMap.get(type)[0] = m;
-            eventSubsMap.get(type)[1] = null;
-        } else {
-            if (eventSubsMap.get(type)[1] == null)
-                eventSubsMap.get(type)[1] = m;
-        }
+        sub(type, m);
     }
 
     @Override
     public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+        sub(type, m);
+    }
+
+    private void sub(Class type, MicroService m) {
         if (!eventSubsMap.containsKey(type)) {
             eventSubsMap.put(type, new MicroService[2]);
             eventSubsMap.get(type)[0] = m;
@@ -61,11 +58,12 @@ public class SimpleMessageBus implements MessageBus {
 
     @Override
     public <T> Future<T> sendEvent(Event<T> e) {
+        if (!eventFutureMap.containsKey(e))
+            eventFutureMap.put(e, new Future<T>());
         MicroService[] a = eventSubsMap.get(e.getClass());
         if (a != null) {
             subsQueueMap.get(a[0].getName()).add(e);
-            // eventFutureMap.put(e,new Future<T>());
-            return new Future<T>();
+            return eventFutureMap.get(e);
         }
         return null;
     }
