@@ -18,21 +18,22 @@ public class MessageBusImpl implements MessageBus {
 
 	//private Queue<Queue<MicroService>> attackEventsQueue;
 	//private Queue<Queue<MicroService>> deactivationEventsQueue;
-	private ConcurrentHashMap<Class<? extends Message>,ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>>> eventsQueuesHashMap;//this hash is matching keys of Event type to its proper queue.
-	private ConcurrentHashMap<MicroService,ConcurrentLinkedQueue<Message>> microServicesHash;			//todo RWL
+	private ConcurrentHashMap<Class<? extends Message>,ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>>> messageTypeToQueueHash;//this hash is matching keys of Event type to its proper queue.
+	private ConcurrentHashMap<MicroService,ConcurrentLinkedQueue<Message>> microServiceToMessageQueueHash;
 
+	private ConcurrentHashMap<Event, Future> eventToFutureHash;		// todo use
 
 	private static class SingletonHolder { private static MessageBusImpl instance = new MessageBusImpl();}
 
 	private MessageBusImpl() {
 		ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> attackEventsQueue = new ConcurrentLinkedQueue<>();
 		ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> deactivationEventsQueue = new ConcurrentLinkedQueue<>();
-		eventsQueuesHashMap = new ConcurrentHashMap();
+		messageTypeToQueueHash = new ConcurrentHashMap();
 
-		eventsQueuesHashMap.put(AttackEvent.class, attackEventsQueue);
-		eventsQueuesHashMap.put(DeactivationEvent.class, deactivationEventsQueue);
+		messageTypeToQueueHash.put(AttackEvent.class, attackEventsQueue);
+		messageTypeToQueueHash.put(DeactivationEvent.class, deactivationEventsQueue);
 
-		microServicesHash = new ConcurrentHashMap<>();
+		microServiceToMessageQueueHash = new ConcurrentHashMap<>();
 	}
 	public static MessageBusImpl getInstance() {
 		return SingletonHolder.instance;
@@ -40,49 +41,61 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-/*		ConcurrentLinkedQueue relevantEventQueue = eventsQueuesHashMap.get(type);
-		ConcurrentLinkedQueue<Event> mMessagesQueue = new ConcurrentLinkedQueue<>();
-
-		relevantEventQueue.add(m);
-		microServicesHash.put(m,mMessagesQueue);*/
+		subscribe(type, m);
 	}
 
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+		subscribe(type, m);
+	}
 
+	private  void subscribe(Class<? extends Message> type, MicroService m) {
+		if(!messageTypeToQueueHash.containsKey(type))
+			synchronized (messageTypeToQueueHash) {                                   //todo: reconsider usage of synchronized
+				if (!messageTypeToQueueHash.containsKey(type))
+					messageTypeToQueueHash.put(type, new ConcurrentLinkedQueue<>());
+			}
+
+		ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> messageQueue = messageTypeToQueueHash.get(type);
+		ConcurrentLinkedQueue<Message> msQueue = microServiceToMessageQueueHash.get(m);
+		messageQueue.add(msQueue);
 	}
 
 	@Override @SuppressWarnings("unchecked")
 	public <T> void complete(Event<T> e, T result) {
-
+		//todo IMPL
 	}
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-
+		//todo IMPL
 	}
 
 
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-
+		//todo IMPL
 		return null;
 	}
 
 	@Override
 	public void register(MicroService m) {
 		ConcurrentLinkedQueue<Message> messagesQueue = new ConcurrentLinkedQueue<>();
-
+		microServiceToMessageQueueHash.put(m, messagesQueue);
 	}
 
 	@Override
 	public void unregister(MicroService m) {
-
+		//todo IMPL
 	}
 
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
+		ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
+		while (mQueue.isEmpty()) {
+			m.wait();
+		}
 
-		return null;
+		return mQueue.remove();
 	}
 }

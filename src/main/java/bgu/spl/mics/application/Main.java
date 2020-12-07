@@ -5,8 +5,9 @@ package bgu.spl.mics.application;
  * In the end, you should output a JSON.
  */
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InterruptedException {
 		System.out.println("GUysa");
+		//System.out.println(this.getClass());
 	}
 
 }
