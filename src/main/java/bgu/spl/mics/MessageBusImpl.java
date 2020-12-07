@@ -18,15 +18,15 @@ public class MessageBusImpl implements MessageBus {
 
 	//private Queue<Queue<MicroService>> attackEventsQueue;
 	//private Queue<Queue<MicroService>> deactivationEventsQueue;
-	private ConcurrentHashMap<Class<? extends Event>,ConcurrentLinkedQueue<ConcurrentLinkedQueue<MicroService>>> eventsQueuesHashMap;//this hash is matching keys of Event type to its proper queue.
-	private ConcurrentHashMap<MicroService,ConcurrentLinkedQueue<Event>> microServicesHash;
+	private ConcurrentHashMap<Class<? extends Message>,ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>>> eventsQueuesHashMap;//this hash is matching keys of Event type to its proper queue.
+	private ConcurrentHashMap<MicroService,ConcurrentLinkedQueue<Message>> microServicesHash;			//todo RWL
 
 
 	private static class SingletonHolder { private static MessageBusImpl instance = new MessageBusImpl();}
 
 	private MessageBusImpl() {
-		ConcurrentLinkedQueue<ConcurrentLinkedQueue<MicroService>> attackEventsQueue = new ConcurrentLinkedQueue<>();
-		ConcurrentLinkedQueue<ConcurrentLinkedQueue<MicroService>> deactivationEventsQueue = new ConcurrentLinkedQueue<>();
+		ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> attackEventsQueue = new ConcurrentLinkedQueue<>();
+		ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> deactivationEventsQueue = new ConcurrentLinkedQueue<>();
 		eventsQueuesHashMap = new ConcurrentHashMap();
 
 		eventsQueuesHashMap.put(AttackEvent.class, attackEventsQueue);
@@ -40,11 +40,11 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		ConcurrentLinkedQueue relevantEventQueue = eventsQueuesHashMap.get(type);
+/*		ConcurrentLinkedQueue relevantEventQueue = eventsQueuesHashMap.get(type);
 		ConcurrentLinkedQueue<Event> mMessagesQueue = new ConcurrentLinkedQueue<>();
 
 		relevantEventQueue.add(m);
-		microServicesHash.put(m,mMessagesQueue);
+		microServicesHash.put(m,mMessagesQueue);*/
 	}
 
 	@Override
@@ -71,6 +71,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void register(MicroService m) {
+		ConcurrentLinkedQueue<Message> messagesQueue = new ConcurrentLinkedQueue<>();
 
 	}
 
