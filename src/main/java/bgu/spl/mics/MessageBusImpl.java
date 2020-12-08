@@ -3,10 +3,10 @@ package bgu.spl.mics;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 
-import java.util.HashMap;
-import java.util.Queue;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
@@ -16,25 +16,26 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class MessageBusImpl implements MessageBus {
 	public static MessageBus obj;		//singleton
 
-	//private Queue<Queue<MicroService>> attackEventsQueue;
-	//private Queue<Queue<MicroService>> deactivationEventsQueue;
 	private ConcurrentHashMap<Class<? extends Message>,ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>>> messageTypeToQueueHash;//this hash is matching keys of Event type to its proper queue.
 	private ConcurrentHashMap<MicroService,ConcurrentLinkedQueue<Message>> microServiceToMessageQueueHash;
-
 	private ConcurrentHashMap<Event, Future> eventToFutureHash;		// todo use
+	private ConcurrentHashMap<MicroService, ConcurrentSkipListSet<Class <? extends Message>>> microServiceSubscriptions;
 
 	private static class SingletonHolder { private static MessageBusImpl instance = new MessageBusImpl();}
 
 	private MessageBusImpl() {
+		eventToFutureHash = new ConcurrentHashMap();
+		messageTypeToQueueHash = new ConcurrentHashMap();
+		microServiceToMessageQueueHash = new ConcurrentHashMap<>();
+		microServiceToMessageQueueHash = new ConcurrentHashMap<>();
+
 		ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> attackEventsQueue = new ConcurrentLinkedQueue<>();
 		ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> deactivationEventsQueue = new ConcurrentLinkedQueue<>();
-		messageTypeToQueueHash = new ConcurrentHashMap();
 
 		messageTypeToQueueHash.put(AttackEvent.class, attackEventsQueue);
 		messageTypeToQueueHash.put(DeactivationEvent.class, deactivationEventsQueue);
-
-		microServiceToMessageQueueHash = new ConcurrentHashMap<>();
 	}
+
 	public static MessageBusImpl getInstance() {
 		return SingletonHolder.instance;
 	}
@@ -56,6 +57,9 @@ public class MessageBusImpl implements MessageBus {
 					messageTypeToQueueHash.put(type, new ConcurrentLinkedQueue<>());
 			}
 
+		ConcurrentSkipListSet mSubscriptionsSet =microServiceSubscriptions.get(m);
+		mSubscriptionsSet.add(type);
+
 		ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> messageQueue = messageTypeToQueueHash.get(type);
 		ConcurrentLinkedQueue<Message> msQueue = microServiceToMessageQueueHash.get(m);
 		messageQueue.add(msQueue);
@@ -63,30 +67,69 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override @SuppressWarnings("unchecked")
 	public <T> void complete(Event<T> e, T result) {
-		//todo IMPL
+		Future<T> future = eventToFutureHash.get(e);
+		future.resolve(result);
 	}
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		//todo IMPL
+		if(messageTypeToQueueHash.containsKey(b.getClass())) {
+			ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> mainQueue = messageTypeToQueueHash.get(b.getClass());
+
+			Iterator<ConcurrentLinkedQueue<Message>> iterator = mainQueue.iterator();
+			while (iterator.hasNext())
+				iterator.next().add(b);
+		}
 	}
 
 
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		//todo IMPL
+		Future<T> future=new Future<>();
+		eventToFutureHash.put(e,future);
+
+		if(messageTypeToQueueHash.containsKey(e.getClass())) {
+			ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> mainQueue = messageTypeToQueueHash.get(e.getClass());
+			ConcurrentLinkedQueue<Message> quque = mainQueue.poll();
+			if(quque==null)
+				return null;
+
+			quque.add(e);
+			mainQueue.add(quque);
+			return future;
+		}
 		return null;
 	}
 
 	@Override
 	public void register(MicroService m) {
-		ConcurrentLinkedQueue<Message> messagesQueue = new ConcurrentLinkedQueue<>();
-		microServiceToMessageQueueHash.put(m, messagesQueue);
+		if(!microServiceToMessageQueueHash.containsKey(m)) {
+			ConcurrentLinkedQueue<Message> messagesQueue = new ConcurrentLinkedQueue<>();
+			microServiceToMessageQueueHash.put(m, messagesQueue);
+			microServiceSubscriptions.put(m, new ConcurrentSkipListSet<>());
+				}
 	}
+
 
 	@Override
 	public void unregister(MicroService m) {
-		//todo IMPL
+		if(microServiceToMessageQueueHash.containsKey(m)) {
+					//todo add collection for message types of m and then iterate it. update in subscribe methods.
+
+			ConcurrentSkipListSet subscriptions = microServiceSubscriptions.get(m);
+			Iterator<Class<? extends Message>> iterator = subscriptions.iterator();
+			ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
+
+			while(iterator.hasNext()){
+				Class<? extends Message> nextType = iterator.next();
+				ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> messagesQueues = messageTypeToQueueHash.get(nextType);
+				messagesQueues.remove(mQueue);
+			}
+
+			microServiceToMessageQueueHash.remove(m);
+		}
+
+
 	}
 
 	@Override
