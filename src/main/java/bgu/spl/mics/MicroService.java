@@ -23,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class MicroService implements Runnable {
     private String name;
     private boolean terminate;
+
+    //todo change to regular map?
     private ConcurrentHashMap<Class<? extends Message>, Callback> messageCallbackMap;
 
     /**
@@ -103,8 +105,8 @@ public abstract class MicroService implements Runnable {
      * null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-        Future<T> f = MessageBusImpl.getInstance().sendEvent(e);
-        return f;
+        Future<T> future = MessageBusImpl.getInstance().sendEvent(e);
+        return future;
     }
 
     /**

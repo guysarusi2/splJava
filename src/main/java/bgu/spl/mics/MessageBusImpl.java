@@ -139,6 +139,7 @@ public class MessageBusImpl implements MessageBus {
     public Message awaitMessage(MicroService m) throws InterruptedException {
         ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
         while (mQueue.isEmpty()) {
+            //todo fix wait
             m.wait();
         }
 

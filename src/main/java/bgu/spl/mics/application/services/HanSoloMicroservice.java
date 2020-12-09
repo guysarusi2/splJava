@@ -4,6 +4,7 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class HanSoloMicroservice extends MicroService {
-
+    //todo Impl times
     public HanSoloMicroservice() {
         super("Han");
     }
@@ -25,13 +26,14 @@ public class HanSoloMicroservice extends MicroService {
     @Override
     protected void initialize() {
         subscribeEvent(AttackEvent.class, (event) -> {
-                    //  aquire ewoks
-                    // sleep
-                    //todo
+                    //  aquire ewoks -> sleep -> release ewoks
+                    // todo
+                    Ewoks.getInstance().aquireEwoks(event.getSerials());
                     try {
                         Thread.sleep(event.getDuration());
                     } catch (InterruptedException e) {
                     }
+                    Ewoks.getInstance().releaseEwoks(event.getSerials());
                 }
         );
     }

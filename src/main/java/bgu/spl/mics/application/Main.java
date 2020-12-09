@@ -8,6 +8,9 @@ public class Main {
 	public static void main(String[] args) throws InterruptedException {
 		System.out.println("GUysa");
 		//System.out.println(this.getClass());
+//		public static void start();{
+//			System.out.println();
+//		}
 	}
 
 }

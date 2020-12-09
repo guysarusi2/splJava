@@ -1,8 +1,12 @@
 package bgu.spl.mics.application.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
+import bgu.spl.mics.Event;
+import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 
 
@@ -29,7 +33,14 @@ public class LeiaMicroservice extends MicroService {
     @Override
     protected void initialize() {
         //send all attack object as attackevents
-        for (Attack a : attacks)
-            sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
+        for (Attack a : attacks) {
+            Future<Boolean> future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
+            while (future == null) {
+                //todo sleep or some
+                //CountDownLatch a= new CountDownLatch()
+            }
+        }
+        //check if future finished and send deactivatione
+        //chech if future finished and send bombevent
     }
 }
