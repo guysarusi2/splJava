@@ -2,6 +2,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.TerminateBattle;
+import bgu.spl.mics.application.messages.BombEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 
 /**
@@ -27,6 +28,8 @@ public class R2D2Microservice extends MicroService {
                 Thread.sleep(duration);
             } catch (InterruptedException e) {
             }
+            //todo
+            sendEvent(new BombEvent());
         });
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();

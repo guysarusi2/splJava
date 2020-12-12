@@ -33,7 +33,7 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
-        subscribeBroadcast(TerminateBattle.class,(event)->{
+        subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
         });
         //send all attack object as attackevents
@@ -41,7 +41,13 @@ public class LeiaMicroservice extends MicroService {
             Future<Boolean> future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
             while (future == null) {
                 //todo sleep or count down latch
-                //CountDownLatch a= new CountDownLatch()
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("duration" + a.getDuration());
+                future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
             }
         }
         //check if future finished and send deactivatione

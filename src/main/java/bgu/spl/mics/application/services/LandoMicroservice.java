@@ -26,9 +26,9 @@ public class LandoMicroservice extends MicroService {
             } catch (InterruptedException e) {
             }
             //todo
-            //sendBroadcast(new TerminateBattle());
+            sendBroadcast(new TerminateBattle());
         });
-        subscribeBroadcast(TerminateBattle.class,(event)->{
+        subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
         });
     }
