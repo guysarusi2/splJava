@@ -12,6 +12,7 @@ import bgu.spl.mics.MicroService;
 
 import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.passiveObjects.Attack;
 
 
@@ -35,6 +36,7 @@ public class LeiaMicroservice extends MicroService {
     protected void initialize() {
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
+            System.out.println("Leia : terminated");
         });
         //send all attack object as attackevents
         for (Attack a : attacks) {
@@ -46,13 +48,20 @@ public class LeiaMicroservice extends MicroService {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                System.out.println("duration" + a.getDuration());
                 future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
             }
+            System.out.println("Leia: attack event received by hans/c3po");
         }
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        sendEvent(new DeactivationEvent());
+        System.out.println("Leia : deactivation event sent");
+        //sendBroadcast(new TerminateBattle());
         //check if future finished and send deactivatione
         //chech if future finished and send bombevent
-
 
     }
 

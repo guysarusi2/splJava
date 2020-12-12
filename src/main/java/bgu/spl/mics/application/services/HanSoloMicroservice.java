@@ -36,10 +36,12 @@ public class HanSoloMicroservice extends MicroService {
                     }
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
                     complete(event,true);
+                    System.out.println("HANS: attack event complete");
                 }
         );
         subscribeBroadcast(TerminateBattle.class,(event)->{
             terminate();
+            System.out.println("Hans : terminated");
         });
     }
 

@@ -36,10 +36,10 @@ public class Ewoks {
             ewoksList.put(i, new Ewok(i));
     }
 
-    public void aquireEwoks(List<Integer> serials) {
+    public synchronized void aquireEwoks(List<Integer> serials) {
         Collections.sort(serials);
         Iterator<Integer> iterator = serials.iterator();
-        synchronized (isAvailable) {
+     //   synchronized (isAvailable) {
             while (!isAvailable.get()) {
                 try {
                     wait();
@@ -47,7 +47,7 @@ public class Ewoks {
                 }
             }
             isAvailable.compareAndSet(true, false);
-        }
+      //  }
         while (iterator.hasNext()) {
             Integer ewokSerial = iterator.next();
             if (ewoksList.get(ewokSerial).isAvailable())
@@ -59,16 +59,16 @@ public class Ewoks {
 //        return isAvailable.get();
 //    }
 
-    public void releaseEwoks(List<Integer> serials) {
+    public  synchronized void releaseEwoks(List<Integer> serials) {
         //todo consider sort again?
         Collections.sort(serials);
         Iterator<Integer> iterator = serials.iterator();
         while (iterator.hasNext())
             ewoksList.get(iterator.next()).release();
-        synchronized (isAvailable) {
+     //   synchronized (isAvailable) {
             isAvailable.compareAndSet(false, true);
             notifyAll();
-        }
+       // }
     }
 
 }

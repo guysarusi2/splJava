@@ -31,10 +31,11 @@ public class C3POMicroservice extends MicroService {
                     } catch (InterruptedException e) {
                     }
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
-                    complete(event,true);
+                    complete(event, true);
+                    System.out.println("C3PO: attack event complete");
                 }
         );
-        subscribeBroadcast(TerminateBattle.class,(event)->{
+        subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
         });
     }

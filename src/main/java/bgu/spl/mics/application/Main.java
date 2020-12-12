@@ -35,29 +35,28 @@ public class Main {
         Ewoks.getInstance().setEwoksList(input.getEwoks());
 
         Thread leia = new Thread(new LeiaMicroservice(input.getAttacks()));
-//        Thread r2d2 = new Thread(new R2D2Microservice(input.getR2D2()));
-//        Thread lando = new Thread(new LandoMicroservice(input.getLando()));
+        Thread r2d2 = new Thread(new R2D2Microservice(input.getR2D2()));
+        Thread lando = new Thread(new LandoMicroservice(input.getLando()));
         Thread hans = new Thread(new HanSoloMicroservice());
-//        Thread c3po = new Thread(new C3POMicroservice());
+        Thread c3po = new Thread(new C3POMicroservice());
 
         //simulate
         leia.start();
         hans.start();
-//        c3po.start();
-//        r2d2.start();
-//        lando.start();
+        c3po.start();
+        r2d2.start();
+        lando.start();
 
         //wait for threads termination
-        try {
-            leia.join();
-            hans.join();
+//        try {
+//            leia.join();
+//            hans.join();
 //            c3po.join();
 //            r2d2.join();
 //            lando.join();
-        } catch (InterruptedException ex) {
-            System.out.println("still working");
-        }
-
+//        } catch (InterruptedException ex) {
+//            System.out.println("still working");
+//        }
 
         //create output
         try {

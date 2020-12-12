@@ -171,7 +171,7 @@ public abstract class MicroService implements Runnable {
                 //todo remove
                 try {
                     if (m == null) System.out.println("guysa");
-                    messageCallbackMap.get(m).call(m);
+                    messageCallbackMap.get(m.getClass()).call(m);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
