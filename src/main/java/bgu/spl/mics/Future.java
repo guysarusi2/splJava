@@ -35,6 +35,8 @@ public class Future<T> {
             return result;
         } else {
             try {
+                //todo using wait only with monitor
+
                 // Thread.currentThread().join();
                 Thread.currentThread().wait();
             } catch (InterruptedException ex) {
@@ -75,8 +77,9 @@ public class Future<T> {
     public T get(long timeout, TimeUnit unit) {
         if (!isDone) {
             try {
-                Thread.currentThread().join(unit.toMillis(timeout));
-                //Thread.currentThread().wait(unit.toMillis(timeout));
+                //todo delete
+                //Thread.currentThread().join(unit.toMillis(timeout));
+                Thread.sleep(unit.toMillis(timeout));
             } catch (InterruptedException e) {
             }
         }

@@ -34,6 +34,7 @@ public class MessageBusImpl implements MessageBus {
         ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> attackEventsQueue = new ConcurrentLinkedQueue<>();
         ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> deactivationEventsQueue = new ConcurrentLinkedQueue<>();
 
+        //todo remove
         messageTypeToQueueHash.put(AttackEvent.class, attackEventsQueue);
         messageTypeToQueueHash.put(DeactivationEvent.class, deactivationEventsQueue);
     }
@@ -53,12 +54,12 @@ public class MessageBusImpl implements MessageBus {
     }
 
     private void subscribe(Class<? extends Message> type, MicroService m) {
-        if (!messageTypeToQueueHash.containsKey(type))
+        if (!messageTypeToQueueHash.containsKey(type)) {
             synchronized (messageTypeToQueueHash) {                                   //todo: reconsider usage of synchronized
                 if (!messageTypeToQueueHash.containsKey(type))
                     messageTypeToQueueHash.put(type, new ConcurrentLinkedQueue<>());
             }
-
+        }
 
         ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> messageQueue = messageTypeToQueueHash.get(type);
         ConcurrentLinkedQueue<Message> msQueue = microServiceToMessageQueueHash.get(m);
