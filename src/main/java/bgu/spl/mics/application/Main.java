@@ -2,7 +2,15 @@ package bgu.spl.mics.application;
 
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.passiveObjects.Attack;
+import bgu.spl.mics.application.passiveObjects.Diary;
+import bgu.spl.mics.application.passiveObjects.Ewoks;
+import bgu.spl.mics.application.passiveObjects.Input;
 import bgu.spl.mics.application.services.*;
+
+import com.google.gson.Gson;
+
+import java.io.*;
+
 
 /**
  * This is the Main class of the application. You should parse the input file,
@@ -11,43 +19,58 @@ import bgu.spl.mics.application.services.*;
  */
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("GUysa");
 
-        //read input and construct -args[o]
-        input();
+        //read input
+        Input input = null;
+        Gson gson = new Gson();
+        try {
+            Reader reader = new FileReader(args[0]);
+            input = gson.fromJson(reader, Input.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        //construct passive+ microservices
+        Diary diary = new Diary();
+        Ewoks.getInstance().setEwoksList(input.getEwoks());
 
-        //simulate
-        //todo duration
-        Thread leia = new Thread(new LeiaMicroservice(new Attack[0]));
+        Thread leia = new Thread(new LeiaMicroservice(input.getAttacks()));
+        Thread r2d2 = new Thread(new R2D2Microservice(input.getR2D2()));
+        Thread lando = new Thread(new LandoMicroservice(input.getLando()));
         Thread hans = new Thread(new HanSoloMicroservice());
         Thread c3po = new Thread(new C3POMicroservice());
-        Thread r2d2 = new Thread(new R2D2Microservice(0));
-        Thread lando = new Thread(new LandoMicroservice(0));
 
+//        //simulate
         leia.start();
         hans.start();
         c3po.start();
         r2d2.start();
         lando.start();
 
-        //wait for threads termination
-        try {
-            leia.join();
-            hans.join();
-            c3po.join();
-            r2d2.join();
-            lando.join();
-        } catch (InterruptedException ex) {
-            System.out.println("still working");
-        }
-        //create output    -args[1]
-        output();
+//        //wait for threads termination
+//        try {
+//            leia.join();
+//            hans.join();
+//            c3po.join();
+//            r2d2.join();
+//            lando.join();
+//        } catch (InterruptedException ex) {
+//            System.out.println("still working");
+//        }
 
+
+//        //create output    -args[1]
+
+        try {
+            Writer writer = new FileWriter(args[1]);
+            gson.toJson(diary, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
-    private static void input() {
+    public void input() {
     }
 
     private static void output() {

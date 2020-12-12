@@ -29,14 +29,14 @@ public class MessageBusImpl implements MessageBus {
         eventToFutureHash = new ConcurrentHashMap();
         messageTypeToQueueHash = new ConcurrentHashMap();
         microServiceToMessageQueueHash = new ConcurrentHashMap<>();
-        microServiceToMessageQueueHash = new ConcurrentHashMap<>();
+        microServiceSubscriptions = new ConcurrentHashMap<>();
 
         ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> attackEventsQueue = new ConcurrentLinkedQueue<>();
         ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> deactivationEventsQueue = new ConcurrentLinkedQueue<>();
 
         //todo remove
-        messageTypeToQueueHash.put(AttackEvent.class, attackEventsQueue);
-        messageTypeToQueueHash.put(DeactivationEvent.class, deactivationEventsQueue);
+//        messageTypeToQueueHash.put(AttackEvent.class, attackEventsQueue);
+//        messageTypeToQueueHash.put(DeactivationEvent.class, deactivationEventsQueue);
     }
 
     public static MessageBusImpl getInstance() {
@@ -65,6 +65,7 @@ public class MessageBusImpl implements MessageBus {
         ConcurrentLinkedQueue<Message> msQueue = microServiceToMessageQueueHash.get(m);
         messageQueue.add(msQueue);
 
+        //todo fix
         ConcurrentSkipListSet mSubscriptionsSet = microServiceSubscriptions.get(m);
         mSubscriptionsSet.add(messageQueue);
     }
