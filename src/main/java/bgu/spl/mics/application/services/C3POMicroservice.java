@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
@@ -30,7 +31,16 @@ public class C3POMicroservice extends MicroService {
                     } catch (InterruptedException e) {
                     }
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
+                    complete(event,true);
                 }
         );
+        subscribeBroadcast(TerminateBattle.class,(event)->{
+            terminate();
+        });
+    }
+
+    @Override
+    protected void close() {
+
     }
 }

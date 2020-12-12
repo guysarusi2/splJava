@@ -10,6 +10,7 @@ import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 
 
+import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.passiveObjects.Attack;
 
@@ -32,15 +33,25 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void initialize() {
+        subscribeBroadcast(TerminateBattle.class,(event)->{
+            terminate();
+        });
         //send all attack object as attackevents
         for (Attack a : attacks) {
             Future<Boolean> future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
             while (future == null) {
-                //todo sleep or some
+                //todo sleep or count down latch
                 //CountDownLatch a= new CountDownLatch()
             }
         }
         //check if future finished and send deactivatione
         //chech if future finished and send bombevent
+
+
+    }
+
+    @Override
+    protected void close() {
+
     }
 }

@@ -90,10 +90,10 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public <T> Future<T> sendEvent(Event<T> e) {
-        Future<T> future = new Future<>();
-        eventToFutureHash.put(e, future);
 
         if (messageTypeToQueueHash.containsKey(e.getClass())) {
+            Future<T> future = new Future<>();
+            eventToFutureHash.put(e, future);
             ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> mainQueue = messageTypeToQueueHash.get(e.getClass());
             ConcurrentLinkedQueue<Message> quque = mainQueue.poll();
             if (quque == null)

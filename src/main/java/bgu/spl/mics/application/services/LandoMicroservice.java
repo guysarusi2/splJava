@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.BombEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 
@@ -24,6 +25,16 @@ public class LandoMicroservice extends MicroService {
                 Thread.sleep(duration);
             } catch (InterruptedException e) {
             }
+            //todo
+            //sendBroadcast(new TerminateBattle());
         });
+        subscribeBroadcast(TerminateBattle.class,(event)->{
+            terminate();
+        });
+    }
+
+    @Override
+    protected void close() {
+
     }
 }

@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 
 /**
@@ -27,5 +28,13 @@ public class R2D2Microservice extends MicroService {
             } catch (InterruptedException e) {
             }
         });
+        subscribeBroadcast(TerminateBattle.class, (event) -> {
+            terminate();
+        });
+    }
+
+    @Override
+    protected void close() {
+
     }
 }
