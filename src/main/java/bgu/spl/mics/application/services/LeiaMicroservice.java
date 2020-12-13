@@ -73,7 +73,7 @@ public class LeiaMicroservice extends MicroService {
                 future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
             }
 
-
+            //todo
             System.out.println("Leia: attack event received by hans/c3po " + a.getSerials().toString());
             if (i == attacks.length - 1) {
                 future.get();
