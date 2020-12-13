@@ -8,8 +8,10 @@ import bgu.spl.mics.application.passiveObjects.Input;
 import bgu.spl.mics.application.services.*;
 
 import com.google.gson.Gson;
+import com.sun.xml.internal.bind.v2.TODO;
 
 import java.io.*;
+import java.util.concurrent.CountDownLatch;
 
 
 /**
@@ -18,20 +20,23 @@ import java.io.*;
  * In the end, you should output a JSON.
  */
 public class Main {
-    public static void main(String[] args) throws InterruptedException {
+    // TODO: 14/12/2020 latch
+    public static CountDownLatch latch = new CountDownLatch(2);
 
+    public static void main(String[] args) throws InterruptedException {
+        // TODO: 14/12/2020 remove try input poutput
         //read input
         Input input = null;
         Gson gson = new Gson();
-        try {
-            Reader reader = new FileReader(args[0]);
+        try (Reader reader = new FileReader("input.json")) {
+            // try (Reader reader = new FileReader(args[0])) {
             input = gson.fromJson(reader, Input.class);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         //construct passive+ microservices
-        Diary diary =  Diary.getInstance();
+        Diary diary = Diary.getInstance();
         Ewoks.getInstance().setEwoksList(input.getEwoks());
 
         Thread leia = new Thread(new LeiaMicroservice(input.getAttacks()));
@@ -59,19 +64,11 @@ public class Main {
         }
 
         //create output
-        try {
-            Writer writer = new FileWriter(args[1]);
+        try (Writer writer = new FileWriter("Output.json")) {
+            // try (Writer writer = new FileWriter(args[1])) {
             gson.toJson(diary, writer);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        System.out.println();
-        long difference = Math.abs(diary.getHanSoloFinish()- diary.getC3POFinish());
-        long finish = diary.getC3POTerminate()-Math.max(diary.getHanSoloFinish(), diary.getC3POFinish());
-        System.out.println("There are "+ diary.getTotalAttacks() +" attacks.\n" +
-                "HanSolo and C3PO finish their tasks "+ difference +" milliseconds one after the other.\n" +
-                "All threads terminate "+ finish +" milliseconds later.");
-
     }
 }

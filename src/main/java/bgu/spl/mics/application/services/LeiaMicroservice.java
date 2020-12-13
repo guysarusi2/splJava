@@ -1,17 +1,13 @@
 package bgu.spl.mics.application.services;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-
-import bgu.spl.mics.Event;
 import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 
 
 import bgu.spl.mics.TerminateBattle;
+import bgu.spl.mics.application.Main;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.BombEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.EndOfAttackEvent;
 import bgu.spl.mics.application.passiveObjects.Attack;
@@ -28,68 +24,63 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  */
 public class LeiaMicroservice extends MicroService {
     private Attack[] attacks;
-    private int numOfFinishedAttacks;
+    private Future[] futures;
 
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
         this.attacks = attacks;
-        numOfFinishedAttacks = 0;
+        futures = new Future[attacks.length];
     }
 
     @Override
     protected void initialize() {
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
-            System.out.println("Leia : terminated");
+            //System.out.println("Leia : terminated");
         });
-        //todo is this good or do something else?
-        subscribeEvent(EndOfAttackEvent.class, (event) -> {
-            numOfFinishedAttacks = numOfFinishedAttacks + 1;
-            if (numOfFinishedAttacks == attacks.length) {
-                sendEvent(new DeactivationEvent());
-                System.out.println("Leia : deactivation event sent");
-            }
-        });
+
 
         //sleep so the others subscribe
         try {
-            Thread.sleep(1000);
+            // TODO: 14/12/2020 delete
+            // Thread.sleep(1000);
+            Main.latch.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
         //send all attack object as attackevents
-
-
-        //for (Attack a : attacks) {
         for (int i = 0; i < attacks.length; i++) {
-            Attack a = attacks[i];
-            Future<Boolean> future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
+            //     for (Attack a : attacks) {
+            Attack nextAttack = attacks[i];
+            Future<Boolean> future = sendEvent(new AttackEvent(nextAttack.getSerials(), nextAttack.getDuration()));
+            // TODO: 14/12/2020 remove while since latch?
             while (future == null) {
-                //todo sleep or count down latch
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
+                future = sendEvent(new AttackEvent(nextAttack.getSerials(), nextAttack.getDuration()));
             }
-
-            //todo
-            System.out.println("Leia: attack event received by hans/c3po " + a.getSerials().toString());
-            if (i == attacks.length - 1) {
-                future.get();
-                sendEvent(new DeactivationEvent());
-                System.out.println("Leia : deactivation event sent");
-            }
+            futures[i] = future;
         }
-
-        //todo
-        //check if future finished and send deactivatione
-        // todo maybe there is a toll for future obj????
+        //check that attacks finished
+        for (int i = 0; i < futures.length; i++) {
+            futures[i].get();
+        }
+        //send deactivation event and bomb event after
+        Future<Boolean> deactivationFuture = sendEvent(new DeactivationEvent());
+        //System.out.println("Leia : deactivation event sent");
+        if (deactivationFuture != null) {
+            deactivationFuture.get();
+            sendEvent(new BombEvent());
+            //System.out.println("Leia : bombevent event sent");
+        }
     }
 
     @Override
     protected void close() {
-        Diary.getInstance().Leia_Terminate(System.currentTimeMillis());    //todo added
+        Diary.getInstance().setLeiaTerminate(System.currentTimeMillis());    //todo added
     }
 }

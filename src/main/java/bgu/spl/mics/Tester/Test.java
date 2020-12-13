@@ -14,6 +14,9 @@ public class Test {
     int     testId;
     private AtomicInteger numOfAttacks = new AtomicInteger(0);
 
+    public int getEwoks(){
+        return Ewoks;
+    }
     public void setEwoks  (int ewoks) {
         Ewoks = ewoks;
     }

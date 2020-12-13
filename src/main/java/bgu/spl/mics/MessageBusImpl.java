@@ -1,11 +1,9 @@
 package bgu.spl.mics;
 
-import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.passiveObjects.Diary;
+// TODO: 13/12/2020 remove ms import
 import bgu.spl.mics.application.services.C3POMicroservice;
 import bgu.spl.mics.application.services.HanSoloMicroservice;
-import bgu.spl.mics.application.services.LeiaMicroservice;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,11 +37,6 @@ public class MessageBusImpl implements MessageBus {
 
         microSubs = new ConcurrentHashMap<>();
 
-        //todo remove
-//        ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> attackEventsQueue = new ConcurrentLinkedQueue<>();
-//        ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> deactivationEventsQueue = new ConcurrentLinkedQueue<>();
-//        messageTypeToQueueHash.put(AttackEvent.class, attackEventsQueue);
-//        messageTypeToQueueHash.put(DeactivationEvent.class, deactivationEventsQueue);
     }
 
     public static MessageBusImpl getInstance() {
@@ -62,7 +55,7 @@ public class MessageBusImpl implements MessageBus {
 
     private void subscribe(Class<? extends Message> type, MicroService m) {
         if (!messageTypeToQueueHash.containsKey(type)) {
-            synchronized (messageTypeToQueueHash) {                                   //todo: reconsider usage of synchronized
+            synchronized (messageTypeToQueueHash) {    //todo: reconsider usage of synchronized
                 if (!messageTypeToQueueHash.containsKey(type))
                     messageTypeToQueueHash.put(type, new ConcurrentLinkedQueue<>());
             }
@@ -77,7 +70,7 @@ public class MessageBusImpl implements MessageBus {
 //        mSubscriptionsSet.add(messageQueue);
 
         //todo GUY
-        //microSubs.get(m).add(type);
+        microSubs.get(m).add(type);
     }
 
     @Override
@@ -109,20 +102,22 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public <T> Future<T> sendEvent(Event<T> e) {
-
+// TODO: 13/12/2020 talk with shahar about this sync
         if (messageTypeToQueueHash.containsKey(e.getClass())) {
             Future<T> future = new Future<>();
             eventToFutureHash.put(e, future);
-            ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> mainQueue = messageTypeToQueueHash.get(e.getClass());
-            ConcurrentLinkedQueue<Message> firstQueue = mainQueue.poll();
-            if (firstQueue == null) //todo when this condition happened?
-                return null;
-            //todo guy
-            synchronized (firstQueue) {
-                firstQueue.add(e);
-                firstQueue.notifyAll();
+            ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> eventQueue = messageTypeToQueueHash.get(e.getClass());
+            synchronized (eventQueue) {
+                ConcurrentLinkedQueue<Message> firstQueue = eventQueue.poll();
+                if (firstQueue == null) //todo when this condition happened?
+                    return null;
+                //todo guy
+                synchronized (firstQueue) {
+                    firstQueue.add(e);
+                    firstQueue.notifyAll();
+                }
+                eventQueue.add(firstQueue);
             }
-            mainQueue.add(firstQueue);
             return future;
         }
         return null;
@@ -147,25 +142,25 @@ public class MessageBusImpl implements MessageBus {
             //todo add collection for message types of m and then iterate it. update in subscribe methods.
 
             //todo  SHAHAR
-            ConcurrentSkipListSet<ConcurrentLinkedQueue<Message>> subscriptions = microServiceSubscriptions.get(m);
-            Iterator<ConcurrentLinkedQueue<Message>> iterator = subscriptions.iterator();
-
-            ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
-
-            while (iterator.hasNext()) {
-                ConcurrentLinkedQueue nextType = iterator.next();
-                nextType.remove(mQueue);
-            }
+//            ConcurrentSkipListSet<ConcurrentLinkedQueue<Message>> subscriptions = microServiceSubscriptions.get(m);
+//            Iterator<ConcurrentLinkedQueue<Message>> iterator = subscriptions.iterator();
+//
+//            ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
+//
+//            while (iterator.hasNext()) {
+//                ConcurrentLinkedQueue nextType = iterator.next();
+//                nextType.remove(mQueue);
+//            }
 
 
             //todo GUYSA
-           /* ConcurrentLinkedQueue<Class<? extends Message>> subs = microSubs.get(m);
+            ConcurrentLinkedQueue<Class<? extends Message>> subs = microSubs.get(m);
             ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
             Iterator<Class<? extends Message>> iterator = subs.iterator();
 
             while (iterator.hasNext()) {
                 messageTypeToQueueHash.get(iterator.next()).remove(mQueue);
-            }*/
+            }
 
 
             microServiceToMessageQueueHash.remove(m);
@@ -180,14 +175,13 @@ public class MessageBusImpl implements MessageBus {
         synchronized (mQueue) {
             while (mQueue.isEmpty()) {
                 {
-                    if(m instanceof HanSoloMicroservice)                                    // todo change to smart implementation
-                        Diary.getInstance().HanSolo_Finish(System.currentTimeMillis());
-                    if(m instanceof C3POMicroservice)
-                        Diary.getInstance().C3PO_Finish(System.currentTimeMillis());
+                    // TODO: 13/12/2020 remove and fix finish stamp
+                    if (m instanceof HanSoloMicroservice)                                    // todo change to smart implementation
+                        Diary.getInstance().setHanSoloFinish(System.currentTimeMillis());
+                    if (m instanceof C3POMicroservice)
+                        Diary.getInstance().setC3POFinish(System.currentTimeMillis());
 
                 }
-                //todo fix wait
-                //m.wait();
                 mQueue.wait();
             }
         }

@@ -21,6 +21,15 @@ public class Diary {
     private long LandoTerminate;
     private long R2D2Terminate;
 
+    // TODO: 13/12/2020 remove both
+    public void resetNumberAttacks() {
+        totalAttacks.set(0);
+    }
+
+    public AtomicInteger getNumberOfAttacks() {
+        return totalAttacks;
+    }
+
     private static class SingletonHolder {
         private static Diary instance = new Diary();
     }
@@ -29,22 +38,44 @@ public class Diary {
         totalAttacks = new AtomicInteger(0);
     }
 
-    public long getHanSoloFinish(){return HanSoloFinish;}
-    public long getC3POFinish(){return C3POFinish;}
-    public long getR2D2Deactivate(){return R2D2Deactivate;}
-    public long getLeiaTerminate(){return LeiaTerminate;}
-    public long getHanSoloTerminate(){return HanSoloTerminate;}
-    public long getC3POTerminate(){return C3POTerminate;}
-    public long getLandoTerminate(){return LandoTerminate;}
-    public long getR2D2Terminate(){return R2D2Terminate;}
+    public long getHanSoloFinish() {
+        return HanSoloFinish;
+    }
 
+    public long getC3POFinish() {
+        return C3POFinish;
+    }
+
+    public long getR2D2Deactivate() {
+        return R2D2Deactivate;
+    }
+
+    public long getLeiaTerminate() {
+        return LeiaTerminate;
+    }
+
+    public long getHanSoloTerminate() {
+        return HanSoloTerminate;
+    }
+
+    public long getC3POTerminate() {
+        return C3POTerminate;
+    }
+
+    public long getLandoTerminate() {
+        return LandoTerminate;
+    }
+
+    public long getR2D2Terminate() {
+        return R2D2Terminate;
+    }
 
 
     public static Diary getInstance() {
         return SingletonHolder.instance;
     }
 
-    public void attack() {
+    public void settotalAttacks() {
         totalAttacks.incrementAndGet();
     }
 
@@ -52,35 +83,35 @@ public class Diary {
         return totalAttacks.get();
     }
 
-    public void HanSolo_Finish(long timeStampInMillis) {
+    public void setHanSoloFinish(long timeStampInMillis) {
         HanSoloFinish = timeStampInMillis;
     }
 
-    public void C3PO_Finish(long timeStampInMillis) {
+    public void setC3POFinish(long timeStampInMillis) {
         C3POFinish = timeStampInMillis;
     }
 
-    public void R2D2_Deactivate(long timeStampInMillis) {
+    public void setR2D2Deactivate(long timeStampInMillis) {
         R2D2Deactivate = timeStampInMillis;
     }
 
-    public void Leia_Terminate(long timeStampInMillis) {
+    public void setLeiaTerminate(long timeStampInMillis) {
         LeiaTerminate = timeStampInMillis;
     }
 
-    public void HanSolo_Terminate(long timeStampInMillis) {
+    public void setHanSoloTerminate(long timeStampInMillis) {
         HanSoloTerminate = timeStampInMillis;
     }
 
-    public void C3PO_Terminate(long timeStampInMillis) {
+    public void setC3POTerminate(long timeStampInMillis) {
         C3POTerminate = timeStampInMillis;
     }
 
-    public void Lando_Terminate(long timeStampInMillis) {
+    public void setLandoTerminate(long timeStampInMillis) {
         LandoTerminate = timeStampInMillis;
     }
 
-    public void R2D2_Terminate(long timeStampInMillis) {
+    public void setR2D2Terminate(long timeStampInMillis) {
         R2D2Terminate = timeStampInMillis;
     }
 

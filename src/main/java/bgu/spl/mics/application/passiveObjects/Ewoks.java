@@ -24,7 +24,8 @@ public class Ewoks {
     }
 
     private Ewoks() {
-        ewoksList = new ConcurrentHashMap<>();
+        //todo
+        //ewoksList = new ConcurrentHashMap<>();
         isAvailable = new AtomicBoolean(true);
     }
 
@@ -33,6 +34,7 @@ public class Ewoks {
     }
 
     public void setEwoksList(int numOfEwoks) {
+        ewoksList = new ConcurrentHashMap<>();
         for (int i = 1; i <= numOfEwoks; i++)
             ewoksList.put(i, new Ewok(i));
     }
@@ -67,7 +69,7 @@ public class Ewoks {
                     }
                 }
                 nextRequired.acquire();
-                System.out.println("aquire" + ewokSerial);
+                //System.out.println("aquire" + ewokSerial);
             }
         }
 
@@ -89,12 +91,12 @@ public class Ewoks {
 //            isAvailable.notifyAll();
 //        }
 
-        while (iterator.hasNext()){
-            Integer ewokSerial= iterator.next();
-            Ewok nextRelease=ewoksList.get(ewokSerial);
-            synchronized (nextRelease){
+        while (iterator.hasNext()) {
+            Integer ewokSerial = iterator.next();
+            Ewok nextRelease = ewoksList.get(ewokSerial);
+            synchronized (nextRelease) {
                 nextRelease.release();
-                System.out.println("release" + ewokSerial);
+                //System.out.println("release" + ewokSerial);
                 nextRelease.notifyAll();
             }
         }

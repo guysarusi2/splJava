@@ -3,7 +3,6 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.BombEvent;
-import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.passiveObjects.Diary;
 
 /**
@@ -24,21 +23,22 @@ public class LandoMicroservice extends MicroService {
         subscribeEvent(BombEvent.class, (event) -> {
             try {
                 Thread.sleep(duration);
-                System.out.println("Lando: star destroyer bombed");
+                //System.out.println("Lando: star destroyer bombed");
+                complete(event, true);
             } catch (InterruptedException e) {
             }
-            //todo
+            // TODO: 13/12/2020 let leia send the termination?
             sendBroadcast(new TerminateBattle());
-            System.out.println("Lando : terminate  sent");
+            //System.out.println("Lando : terminate  sent");
         });
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
-            System.out.println("Lando : terminated");
+            //System.out.println("Lando : terminated");
         });
     }
 
     @Override
     protected void close() {
-        Diary.getInstance().Lando_Terminate(System.currentTimeMillis());    //todo added
+        Diary.getInstance().setLandoTerminate(System.currentTimeMillis());    //todo added
     }
 }

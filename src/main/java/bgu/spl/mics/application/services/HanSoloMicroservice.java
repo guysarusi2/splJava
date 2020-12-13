@@ -1,15 +1,12 @@
 package bgu.spl.mics.application.services;
 
 
-import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.TerminateBattle;
+import bgu.spl.mics.application.Main;
 import bgu.spl.mics.application.messages.AttackEvent;
-import bgu.spl.mics.application.messages.EndOfAttackEvent;
 import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * HanSoloMicroservices is in charge of the handling {@link AttackEvent}.
@@ -36,23 +33,22 @@ public class HanSoloMicroservice extends MicroService {
                         Thread.sleep(event.getDuration());
                     } catch (InterruptedException e) {
                     }
-                    Diary.getInstance().attack();           //todo added
-                    System.out.println("HANS: attack event complete+ ewoks:" + event.getSerials().toString());
-                    //System.out.println("HANS: attack event complete");
+                    Diary.getInstance().settotalAttacks();           //todo added
+                    //System.out.println("HANS: attack event complete+ ewoks:" + event.getSerials().toString());
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
                     complete(event, true);
-                    //sendEvent(new EndOfAttackEvent());
                 }
         );
+        Main.latch.countDown();
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
-            System.out.println("Hans : terminated");
+            //System.out.println("Hans : terminated");
         });
     }
 
     @Override
     protected void close() {
-        Diary.getInstance().HanSolo_Terminate(System.currentTimeMillis());    //todo added
+        Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());    //todo added
     }
 
 
