@@ -66,5 +66,12 @@ public class Main {
             e.printStackTrace();
         }
 
+        System.out.println();
+        long difference = Math.abs(diary.getHanSoloFinish()- diary.getC3POFinish());
+        long finish = diary.getC3POTerminate()-Math.max(diary.getHanSoloFinish(), diary.getC3POFinish());
+        System.out.println("There are "+ diary.getTotalAttacks() +" attacks.\n" +
+                "HanSolo and C3PO finish their tasks "+ difference +" milliseconds one after the other.\n" +
+                "All threads terminate "+ finish +" milliseconds later.");
+
     }
 }

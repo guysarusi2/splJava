@@ -97,9 +97,8 @@ public class Future<T> {
             } catch (InterruptedException e) {
             }
         }
-        if (isDone)
+
             return result;
-        return null;
     }
 
 }

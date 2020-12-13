@@ -4,6 +4,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.BombEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
+import bgu.spl.mics.application.passiveObjects.Diary;
 
 /**
  * LandoMicroservice
@@ -38,6 +39,6 @@ public class LandoMicroservice extends MicroService {
 
     @Override
     protected void close() {
-
+        Diary.getInstance().Lando_Terminate(System.currentTimeMillis());    //todo added
     }
 }
