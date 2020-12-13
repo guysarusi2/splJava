@@ -31,7 +31,7 @@ public class Main {
         }
 
         //construct passive+ microservices
-        Diary diary = new Diary();
+        Diary diary =  Diary.getInstance();
         Ewoks.getInstance().setEwoksList(input.getEwoks());
 
         Thread leia = new Thread(new LeiaMicroservice(input.getAttacks()));

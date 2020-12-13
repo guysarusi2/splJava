@@ -14,12 +14,10 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * Only private fields and methods can be added to this class.
  */
 public class MessageBusImpl implements MessageBus {
-    public static MessageBus obj;        //singleton
-
     private ConcurrentHashMap<Class<? extends Message>, ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>>> messageTypeToQueueHash;//this hash is matching keys of Event type to its proper queue.
     private ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Message>> microServiceToMessageQueueHash;
-    private ConcurrentHashMap<Event, Future> eventToFutureHash;        // todo use
-    private ConcurrentHashMap<MicroService, ConcurrentSkipListSet<ConcurrentLinkedQueue>> microServiceSubscriptions;
+    private ConcurrentHashMap<Event, Future> eventToFutureHash;
+    private ConcurrentHashMap<MicroService, ConcurrentSkipListSet<ConcurrentLinkedQueue<Message>>> microServiceSubscriptions;
 
     //private ConcurrentHashMap<MicroService, ConcurrentSkipListSet<Class<? extends Message>>> microSubs;
     private ConcurrentHashMap<MicroService, ConcurrentLinkedQueue<Class<? extends Message>>> microSubs;
@@ -145,25 +143,25 @@ public class MessageBusImpl implements MessageBus {
             //todo add collection for message types of m and then iterate it. update in subscribe methods.
 
             //todo  SHAHAR
-//            ConcurrentSkipListSet subscriptions = microServiceSubscriptions.get(m);
-//            Iterator<ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>>> iterator = subscriptions.iterator();
-//
-//            ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
-//
-//            while (iterator.hasNext()) {
-//                ConcurrentLinkedQueue nextType = iterator.next();
-//                nextType.remove(mQueue);
-//            }
+            ConcurrentSkipListSet<ConcurrentLinkedQueue<Message>> subscriptions = microServiceSubscriptions.get(m);
+            Iterator<ConcurrentLinkedQueue<Message>> iterator = subscriptions.iterator();
+
+            ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
+
+            while (iterator.hasNext()) {
+                ConcurrentLinkedQueue nextType = iterator.next();
+                nextType.remove(mQueue);
+            }
 
 
             //todo GUYSA
-            ConcurrentLinkedQueue<Class<? extends Message>> subs = microSubs.get(m);
+           /* ConcurrentLinkedQueue<Class<? extends Message>> subs = microSubs.get(m);
             ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
             Iterator<Class<? extends Message>> iterator = subs.iterator();
 
             while (iterator.hasNext()) {
                 messageTypeToQueueHash.get(iterator.next()).remove(mQueue);
-            }
+            }*/
 
 
             microServiceToMessageQueueHash.remove(m);
