@@ -3,6 +3,7 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.EndOfAttackEvent;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 
@@ -30,13 +31,15 @@ public class C3POMicroservice extends MicroService {
                         Thread.sleep(event.getDuration());
                     } catch (InterruptedException e) {
                     }
+                    System.out.println("C3PO: attack event complete+ ewoks:" + event.getSerials().toString());
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
                     complete(event, true);
-                    System.out.println("C3PO: attack event complete");
+                    sendEvent(new EndOfAttackEvent());
                 }
         );
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
+            System.out.println("C3PO : terminated");
         });
     }
 

@@ -5,6 +5,7 @@ import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.AttackEvent;
+import bgu.spl.mics.application.messages.EndOfAttackEvent;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 import java.util.concurrent.TimeUnit;
@@ -34,12 +35,14 @@ public class HanSoloMicroservice extends MicroService {
                         Thread.sleep(event.getDuration());
                     } catch (InterruptedException e) {
                     }
+                    System.out.println("HANS: attack event complete+ ewoks:" + event.getSerials().toString());
+                    //System.out.println("HANS: attack event complete");
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
-                    complete(event,true);
-                    System.out.println("HANS: attack event complete");
+                    complete(event, true);
+                    sendEvent(new EndOfAttackEvent());
                 }
         );
-        subscribeBroadcast(TerminateBattle.class,(event)->{
+        subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
             System.out.println("Hans : terminated");
         });

@@ -36,39 +36,67 @@ public class Ewoks {
             ewoksList.put(i, new Ewok(i));
     }
 
-    public synchronized void aquireEwoks(List<Integer> serials) {
+    public void aquireEwoks(List<Integer> serials) {
         Collections.sort(serials);
         Iterator<Integer> iterator = serials.iterator();
-     //   synchronized (isAvailable) {
-            while (!isAvailable.get()) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                }
-            }
-            isAvailable.compareAndSet(true, false);
-      //  }
+//        synchronized (isAvailable) {
+//            while (!isAvailable.get()) {
+//                try {
+//                    isAvailable.wait();
+//                } catch (InterruptedException e) {
+//                }
+//            }
+//            isAvailable.compareAndSet(true, false);
+//        }
+//        while (iterator.hasNext()) {
+//            Integer ewokSerial = iterator.next();
+//            if (ewoksList.get(ewokSerial).isAvailable())
+//                ewoksList.get(ewokSerial).acquire();
+//        }
+
         while (iterator.hasNext()) {
             Integer ewokSerial = iterator.next();
-            if (ewoksList.get(ewokSerial).isAvailable())
-                ewoksList.get(ewokSerial).acquire();
+            Ewok nextRequired = ewoksList.get(ewokSerial);
+            synchronized (nextRequired) {
+                while (!nextRequired.isAvailable()) {
+                    try {
+                        nextRequired.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                nextRequired.acquire();
+                System.out.println("aquire" + ewokSerial);
+            }
         }
+
+
     }
 
 //    public boolean isAvailable() {
 //        return isAvailable.get();
 //    }
 
-    public  synchronized void releaseEwoks(List<Integer> serials) {
+    public void releaseEwoks(List<Integer> serials) {
         //todo consider sort again?
         Collections.sort(serials);
         Iterator<Integer> iterator = serials.iterator();
-        while (iterator.hasNext())
-            ewoksList.get(iterator.next()).release();
-     //   synchronized (isAvailable) {
-            isAvailable.compareAndSet(false, true);
-            notifyAll();
-       // }
+//        while (iterator.hasNext())
+//            ewoksList.get(iterator.next()).release();
+//        synchronized (isAvailable) {
+//            isAvailable.compareAndSet(false, true);
+//            isAvailable.notifyAll();
+//        }
+
+        while (iterator.hasNext()){
+            Integer ewokSerial= iterator.next();
+            Ewok nextRelease=ewoksList.get(ewokSerial);
+            synchronized (nextRelease){
+                nextRelease.release();
+                System.out.println("release" + ewokSerial);
+                nextRelease.notifyAll();
+            }
+        }
     }
 
 }

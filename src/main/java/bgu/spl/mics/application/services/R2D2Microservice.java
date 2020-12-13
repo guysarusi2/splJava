@@ -31,7 +31,7 @@ public class R2D2Microservice extends MicroService {
             }
             //todo
             sendEvent(new BombEvent());
-            System.out.println("R2D2 : bomb event event sent");
+            System.out.println("R2D2 : bombevent event sent");
         });
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();

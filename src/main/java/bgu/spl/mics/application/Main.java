@@ -41,22 +41,22 @@ public class Main {
         Thread c3po = new Thread(new C3POMicroservice());
 
         //simulate
-        leia.start();
         hans.start();
         c3po.start();
+        leia.start();
         r2d2.start();
         lando.start();
 
         //wait for threads termination
-//        try {
-//            leia.join();
-//            hans.join();
-//            c3po.join();
-//            r2d2.join();
-//            lando.join();
-//        } catch (InterruptedException ex) {
-//            System.out.println("still working");
-//        }
+        try {
+            leia.join();
+            hans.join();
+            c3po.join();
+            r2d2.join();
+            lando.join();
+        } catch (InterruptedException ex) {
+            System.out.println("still working");
+        }
 
         //create output
         try {
@@ -67,11 +67,4 @@ public class Main {
         }
 
     }
-
-    public void input() {
-    }
-
-    private static void output() {
-    }
-
 }
