@@ -1,7 +1,10 @@
 .idea
 *.xml
 .DS_Store
-*.json
+input.json
+output.json
+Output.json
+Tests.json
 # Compiled class file
 *.class
 
