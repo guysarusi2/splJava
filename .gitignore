@@ -1,6 +1,7 @@
 .idea
 *.xml
 .DS_Store
+*.json
 # Compiled class file
 *.class
 
