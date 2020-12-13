@@ -57,7 +57,11 @@ public class LeiaMicroservice extends MicroService {
             e.printStackTrace();
         }
         //send all attack object as attackevents
-        for (Attack a : attacks) {
+
+
+        //for (Attack a : attacks) {
+        for (int i = 0; i < attacks.length; i++) {
+            Attack a = attacks[i];
             Future<Boolean> future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
             while (future == null) {
                 //todo sleep or count down latch
@@ -68,21 +72,19 @@ public class LeiaMicroservice extends MicroService {
                 }
                 future = sendEvent(new AttackEvent(a.getSerials(), a.getDuration()));
             }
-            System.out.println("Leia: attack event received by hans/c3po "+a.getSerials().toString());
+
+
+            System.out.println("Leia: attack event received by hans/c3po " + a.getSerials().toString());
+            if (i == attacks.length - 1) {
+                future.get();
+                sendEvent(new DeactivationEvent());
+                System.out.println("Leia : deactivation event sent");
+            }
         }
 
         //todo
         //check if future finished and send deactivatione
         // todo maybe there is a toll for future obj????
-
-//        try {
-//            Thread.sleep(9000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        sendEvent(new DeactivationEvent());
-//        System.out.println("Leia : deactivation event sent");
-
     }
 
     @Override

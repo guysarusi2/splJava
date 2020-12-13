@@ -15,6 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * You can add ONLY private methods and fields to this class.
  */
 public class Ewoks {
+    // TODO: 13/12/2020 delete isAvailable
     private AtomicBoolean isAvailable;
     private ConcurrentHashMap<Integer, Ewok> ewoksList;
 
