@@ -6,6 +6,7 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.TerminateBattle;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.EndOfAttackEvent;
+import bgu.spl.mics.application.passiveObjects.Diary;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 import java.util.concurrent.TimeUnit;
@@ -35,6 +36,7 @@ public class HanSoloMicroservice extends MicroService {
                         Thread.sleep(event.getDuration());
                     } catch (InterruptedException e) {
                     }
+                    Diary.getInstance().attack();           //todo added
                     System.out.println("HANS: attack event complete+ ewoks:" + event.getSerials().toString());
                     //System.out.println("HANS: attack event complete");
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
@@ -50,7 +52,7 @@ public class HanSoloMicroservice extends MicroService {
 
     @Override
     protected void close() {
-
+        Diary.getInstance().HanSolo_Terminate(System.currentTimeMillis());    //todo added
     }
 
 

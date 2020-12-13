@@ -2,6 +2,10 @@ package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
+import bgu.spl.mics.application.passiveObjects.Diary;
+import bgu.spl.mics.application.services.C3POMicroservice;
+import bgu.spl.mics.application.services.HanSoloMicroservice;
+import bgu.spl.mics.application.services.LeiaMicroservice;
 
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,7 +77,7 @@ public class MessageBusImpl implements MessageBus {
 //        mSubscriptionsSet.add(messageQueue);
 
         //todo GUY
-        microSubs.get(m).add(type);
+        //microSubs.get(m).add(type);
     }
 
     @Override
@@ -175,6 +179,13 @@ public class MessageBusImpl implements MessageBus {
         ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
         synchronized (mQueue) {
             while (mQueue.isEmpty()) {
+                {
+                    if(m instanceof HanSoloMicroservice)                                    // todo change to smart implementation
+                        Diary.getInstance().HanSolo_Finish(System.currentTimeMillis());
+                    if(m instanceof C3POMicroservice)
+                        Diary.getInstance().C3PO_Finish(System.currentTimeMillis());
+
+                }
                 //todo fix wait
                 //m.wait();
                 mQueue.wait();

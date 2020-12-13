@@ -15,6 +15,7 @@ import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.EndOfAttackEvent;
 import bgu.spl.mics.application.passiveObjects.Attack;
+import bgu.spl.mics.application.passiveObjects.Diary;
 
 
 /**
@@ -89,6 +90,6 @@ public class LeiaMicroservice extends MicroService {
 
     @Override
     protected void close() {
-
+        Diary.getInstance().Leia_Terminate(System.currentTimeMillis());    //todo added
     }
 }
