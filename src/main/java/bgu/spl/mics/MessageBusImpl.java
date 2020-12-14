@@ -174,14 +174,6 @@ public class MessageBusImpl implements MessageBus {
         ConcurrentLinkedQueue<Message> mQueue = microServiceToMessageQueueHash.get(m);
         synchronized (mQueue) {
             while (mQueue.isEmpty()) {
-                {
-                    // TODO: 13/12/2020 remove and fix finish stamp
-                    if (m instanceof HanSoloMicroservice)                                    // todo change to smart implementation
-                        Diary.getInstance().setHanSoloFinish(System.currentTimeMillis());
-                    if (m instanceof C3POMicroservice)
-                        Diary.getInstance().setC3POFinish(System.currentTimeMillis());
-
-                }
                 mQueue.wait();
             }
         }

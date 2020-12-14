@@ -36,6 +36,7 @@ public class C3POMicroservice extends MicroService {
                     //System.out.println("C3PO: attack event complete+ ewoks:" + event.getSerials().toString());
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
                     complete(event, true);
+                    Diary.getInstance().setC3POFinish(System.currentTimeMillis());
                 }
         );
         Main.latch.countDown();

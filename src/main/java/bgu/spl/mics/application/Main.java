@@ -12,6 +12,7 @@ import com.sun.xml.internal.bind.v2.TODO;
 
 import java.io.*;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
@@ -45,6 +46,8 @@ public class Main {
         Thread hans = new Thread(new HanSoloMicroservice());
         Thread c3po = new Thread(new C3POMicroservice());
 
+        long startTime = System.currentTimeMillis();        //todo remove
+
         //simulate
         hans.start();
         c3po.start();
@@ -70,5 +73,16 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        System.out.println("\ntotalAttacks: "+ diary.getTotalAttacks()+
+          "\nHanSoloFinish: " + (diary.getHanSoloFinish()-startTime)+
+          "\nC3POFinish: " +(diary.getC3POFinish()-startTime)+
+          "\nR2D2Deactivate: " +(diary.getR2D2Deactivate()-startTime)+
+          "\nLeiaTerminate: " +(diary.getLeiaTerminate()-startTime)+
+          "\nHanSoloTerminate: " +(diary.getHanSoloTerminate()-startTime)+
+          "\nC3POTerminate: " +(diary.getC3POTerminate()-startTime)+
+          "\nLandoTerminate: " +(diary.getLandoTerminate()-startTime)+
+          "\nR2D2Terminate: " +(diary.getR2D2Terminate()-startTime));
+
     }
 }

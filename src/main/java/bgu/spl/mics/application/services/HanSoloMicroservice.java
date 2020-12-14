@@ -37,6 +37,7 @@ public class HanSoloMicroservice extends MicroService {
                     //System.out.println("HANS: attack event complete+ ewoks:" + event.getSerials().toString());
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
                     complete(event, true);
+                    Diary.getInstance().setHanSoloFinish(System.currentTimeMillis());
                 }
         );
         Main.latch.countDown();
