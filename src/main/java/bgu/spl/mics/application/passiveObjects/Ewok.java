@@ -10,7 +10,6 @@ public class Ewok {
     int serialNumber;
     boolean available;
 
-    //TODO delete?/fix
     public Ewok(int serial) {
         serialNumber = serial;
         available = true;

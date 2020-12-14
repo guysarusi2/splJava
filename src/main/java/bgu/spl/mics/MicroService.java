@@ -24,7 +24,6 @@ public abstract class MicroService implements Runnable {
     private String name;
     private boolean terminate;
 
-    //todo change to regular map?
     private ConcurrentHashMap<Class<? extends Message>, Callback> messageCallbackMap;
 
     /**
@@ -158,7 +157,7 @@ public abstract class MicroService implements Runnable {
     }
 
     /**
-     * The entry point of the micro-service. TODO: you must complete this code
+     * The entry point of the micro-service.
      * otherwise you will end up in an infinite loop.
      */
     @Override
@@ -169,9 +168,7 @@ public abstract class MicroService implements Runnable {
         while (!terminate) {
             try {
                 Message m = MessageBusImpl.getInstance().awaitMessage(this);
-                //todo remove
                 try {
-                    if (m == null) System.out.println("guysa");
                     messageCallbackMap.get(m.getClass()).call(m);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -183,7 +180,6 @@ public abstract class MicroService implements Runnable {
         MessageBusImpl.getInstance().unregister(this);
     }
 
-    // TODO: 12/12/2020 impl and doc
     protected abstract void close();
 }
 

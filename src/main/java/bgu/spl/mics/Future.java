@@ -31,21 +31,6 @@ public class Future<T> {
      * @return return the result of type T if it is available, if not wait until it is available.
      */
     public T get() {
-        //todo delete
-//        if (isDone) {
-//            return result;
-//        } else {
-//            try {
-//                //todo using wait only with monitor
-//
-//                // Thread.currentThread().join();
-//                Thread.currentThread().wait();
-//            } catch (InterruptedException ex) {
-//            }
-//            if (isDone)
-//                return result;
-//        }
-//        return null;
         if (!isDone) {
             synchronized (this) {
                 while (!isDone) {
@@ -92,9 +77,11 @@ public class Future<T> {
      */
     public T get(long timeout, TimeUnit unit) {
         if (!isDone) {
-            try {
-                Thread.sleep(unit.toMillis(timeout));
-            } catch (InterruptedException e) {
+            synchronized (this) {
+                try {
+                    wait(unit.toMillis(timeout));
+                } catch (InterruptedException e) {
+                }
             }
         }
         return result;

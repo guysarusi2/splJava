@@ -1,8 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.TerminateBattle;
-import bgu.spl.mics.application.messages.BombEvent;
+import bgu.spl.mics.application.messages.TerminateBattle;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.passiveObjects.Diary;
 
@@ -27,20 +26,18 @@ public class R2D2Microservice extends MicroService {
         subscribeEvent(DeactivationEvent.class, (event) -> {
             try {
                 Thread.sleep(duration);
-                Diary.getInstance().setR2D2Deactivate(System.currentTimeMillis());    //todo added
-               // System.out.println("R2D2: shield generator deactivated");
+                Diary.getInstance().setR2D2Deactivate(System.currentTimeMillis());
                 complete(event, true);
             } catch (InterruptedException e) {
             }
         });
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
-            //System.out.println("R2D2 : terminated");
         });
     }
 
     @Override
     protected void close() {
-        Diary.getInstance().setR2D2Terminate(System.currentTimeMillis());    //todo added
+        Diary.getInstance().setR2D2Terminate(System.currentTimeMillis());
     }
 }

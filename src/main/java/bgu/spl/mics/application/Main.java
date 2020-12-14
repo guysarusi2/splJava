@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * In the end, you should output a JSON.
  */
 public class Main {
-    // TODO: 14/12/2020 latch
     public static CountDownLatch latch = new CountDownLatch(2);
 
     public static void main(String[] args) throws InterruptedException {
@@ -29,6 +28,7 @@ public class Main {
         //read input
         Input input = null;
         Gson gson = new Gson();
+        //todo
         try (Reader reader = new FileReader("input.json")) {
             // try (Reader reader = new FileReader(args[0])) {
             input = gson.fromJson(reader, Input.class);

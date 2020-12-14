@@ -2,7 +2,7 @@ package bgu.spl.mics.application.services;
 
 
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.TerminateBattle;
+import bgu.spl.mics.application.messages.TerminateBattle;
 import bgu.spl.mics.application.Main;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.passiveObjects.Diary;
@@ -17,7 +17,6 @@ import bgu.spl.mics.application.passiveObjects.Ewoks;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class HanSoloMicroservice extends MicroService {
-    //todo Impl times
     public HanSoloMicroservice() {
         super("Han");
     }
@@ -27,14 +26,12 @@ public class HanSoloMicroservice extends MicroService {
     protected void initialize() {
         subscribeEvent(AttackEvent.class, (event) -> {
                     //  aquire ewoks -> sleep -> release ewoks
-                    // todo
                     Ewoks.getInstance().aquireEwoks(event.getSerials());
                     try {
                         Thread.sleep(event.getDuration());
                     } catch (InterruptedException e) {
                     }
-                    Diary.getInstance().settotalAttacks();           //todo added
-                    //System.out.println("HANS: attack event complete+ ewoks:" + event.getSerials().toString());
+                    Diary.getInstance().settotalAttacks();
                     Ewoks.getInstance().releaseEwoks(event.getSerials());
                     complete(event, true);
                     Diary.getInstance().setHanSoloFinish(System.currentTimeMillis());
@@ -43,13 +40,12 @@ public class HanSoloMicroservice extends MicroService {
         Main.latch.countDown();
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
-            //System.out.println("Hans : terminated");
         });
     }
 
     @Override
     protected void close() {
-        Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());    //todo added
+        Diary.getInstance().setHanSoloTerminate(System.currentTimeMillis());
     }
 
 
