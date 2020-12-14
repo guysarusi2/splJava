@@ -74,6 +74,7 @@ public class Main {
             e.printStackTrace();
         }
 
+        // TODO: 14/12/2020 delete
         System.out.println("\ntotalAttacks: "+ diary.getTotalAttacks()+
           "\nHanSoloFinish: " + (diary.getHanSoloFinish()-startTime)+
           "\nC3POFinish: " +(diary.getC3POFinish()-startTime)+
