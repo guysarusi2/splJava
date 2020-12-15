@@ -30,7 +30,7 @@ public class Main {
         Gson gson = new Gson();
         //todo
         try (Reader reader = new FileReader("input.json")) {
-            // try (Reader reader = new FileReader(args[0])) {
+           //  try (Reader reader = new FileReader(args[0])) {
             input = gson.fromJson(reader, Input.class);
         } catch (Exception e) {
             e.printStackTrace();
