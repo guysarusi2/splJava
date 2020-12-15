@@ -45,15 +45,14 @@ public class MessageBusImpl implements MessageBus {
         ConcurrentLinkedQueue<Message> msQueue = microServiceToMessageQueueHash.get(m);
         if (!messageTypeToQueueHash.containsKey(type)) {
             synchronized (messageTypeToQueueHash) {
-                if (!messageTypeToQueueHash.containsKey(type))
-                    messageTypeToQueueHash.put(type, new ConcurrentLinkedQueue<>());
+                if (!messageTypeToQueueHash.containsKey(type)) {
+                    ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> messageQueue = new ConcurrentLinkedQueue<>();
+                    messageQueue.add(msQueue);
+                    messageTypeToQueueHash.put(type, messageQueue);
+                }
             }
         }
-        // TODO: 14/12/2020 putifabsent?
-        //messageTypeToQueueHash.putIfAbsent(type,);
-        ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> messageQueue = messageTypeToQueueHash.get(type);
-        messageQueue.add(msQueue);
-
+        // TODO: 14/12/2020 good?
         microServiceSubscriptions.get(m).add(type);
     }
 
