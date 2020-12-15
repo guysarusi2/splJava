@@ -49,7 +49,7 @@ public class MessageBusImpl implements MessageBus {
                     messageTypeToQueueHash.put(type, new ConcurrentLinkedQueue<>());
             }
         }
-        // TODO: 14/12/2020
+        // TODO: 14/12/2020 putifabsent?
         //messageTypeToQueueHash.putIfAbsent(type,);
         ConcurrentLinkedQueue<ConcurrentLinkedQueue<Message>> messageQueue = messageTypeToQueueHash.get(type);
         messageQueue.add(msQueue);

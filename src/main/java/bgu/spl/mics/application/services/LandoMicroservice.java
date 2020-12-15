@@ -1,14 +1,15 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.TerminateBattle;
 import bgu.spl.mics.application.messages.BombEvent;
 import bgu.spl.mics.application.passiveObjects.Diary;
 
 /**
- * LandoMicroservice
- * You can add private fields and public methods to this class.
- * You MAY change constructor signatures and even add new public constructors.
+ * LandoMicroservice is in charge of the handling {@link BombEvent}.
+ *  * This class may not hold references for objects which it is not responsible for:
+ *  * {@link BombEvent}.
  */
 public class LandoMicroservice extends MicroService {
     private long duration;
@@ -26,7 +27,7 @@ public class LandoMicroservice extends MicroService {
                 complete(event, true);
             } catch (InterruptedException e) {
             }
-        });
+         });
         subscribeBroadcast(TerminateBattle.class, (event) -> {
             terminate();
         });

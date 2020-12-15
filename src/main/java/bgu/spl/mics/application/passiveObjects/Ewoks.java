@@ -2,18 +2,13 @@ package bgu.spl.mics.application.passiveObjects;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
- * Passive object representing the resource manager.
- * <p>
- * This class must be implemented as a thread-safe singleton.
- * You must not alter any of the given public methods of this class.
- * <p>
- * You can add ONLY private methods and fields to this class.
+ * Passive object representing the resource manager of Ewok objects.
+ * Implemented as a thread safe singleton.
  */
+
 public class Ewoks {
     private ConcurrentHashMap<Integer, Ewok> ewoksList;
 
@@ -28,12 +23,24 @@ public class Ewoks {
         return SingletonHolder.instance;
     }
 
+    /**
+     * This method creates the list of Ewoks that available to acquire.
+     *
+     * @param numOfEwoks The number of Ewoks that will be available.
+     */
     public void setEwoksList(int numOfEwoks) {
         ewoksList = new ConcurrentHashMap<>();
         for (int i = 1; i <= numOfEwoks; i++)
             ewoksList.put(i, new Ewok(i));
     }
 
+    /**
+     * Using this method a Microservice(thread) can acquire the Ewoks it needs.
+     * This method is blocking meaning that if the Ewoks requested are not available,
+     * the microservice should wait until they become available.
+     *
+     * @param serials The serials of the Ewoks required for the attack.
+     */
     public void aquireEwoks(List<Integer> serials) {
         Collections.sort(serials);
         Iterator<Integer> iterator = serials.iterator();
@@ -53,6 +60,12 @@ public class Ewoks {
         }
     }
 
+    /**
+     * Using this method a microservice releases the Ewoks he acquired for the attack,
+     * and notifies the waiting microservices for each Ewok.
+     *
+     * @param serials The serials of the Ewoks to release.
+     */
     public void releaseEwoks(List<Integer> serials) {
         Collections.sort(serials);
         Iterator<Integer> iterator = serials.iterator();

@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Event;
 import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 
@@ -18,8 +19,6 @@ import bgu.spl.mics.application.passiveObjects.Diary;
  * This class may not hold references for objects which it is not responsible for:
  * {@link AttackEvent}.
  * <p>
- * You can add private fields and public methods to this class.
- * You MAY change constructor signatures and even add new public constructors.
  */
 public class LeiaMicroservice extends MicroService {
     private Attack[] attacks;
@@ -37,34 +36,46 @@ public class LeiaMicroservice extends MicroService {
             terminate();
         });
 
-        //sleep so the others subscribe
+        //wait for the others to subscribe Attackevent
         try {
             Main.latch.await();
         } catch (InterruptedException e) {
         }
 
-        //send all attack object as attackevents
+        sendAttacks();
+        send(new DeactivationEvent());
+        send(new BombEvent());
+        sendBroadcast(new TerminateBattle());
+    }
+
+    /**
+     * This method is used by Leia to send the Attack objects as AttackEvents,
+     * and wait for the future object to be resolved for each AttackEvent.
+     */
+    private void sendAttacks() {
         for (int i = 0; i < attacks.length; i++) {
             Attack nextAttack = attacks[i];
             Future<Boolean> future = sendEvent(new AttackEvent(nextAttack.getSerials(), nextAttack.getDuration()));
             futures[i] = future;
         }
-        //check that attacks finished
         for (int i = 0; i < futures.length; i++) {
             futures[i].get();
         }
-        //send deactivation event
-        Future<Boolean> future = sendEvent(new DeactivationEvent());
-        if (future != null) {
-            future.get();
-            future = sendEvent(new BombEvent());
-        }
-        //send deactivation event
-        if (future != null) {
-            future.get();
-            sendBroadcast(new TerminateBattle());
-        }
     }
+
+    /**
+     * This method used by Leia to send the DeactivationEvent and the BombEvent.
+     * Leia wait for the future object to be resolved
+     *
+     * @param event The event to send
+     * @param <T>   The type of event result.
+     */
+    private <T> void send(Event<T> event) {
+        Future<T> future = sendEvent(event);
+        if (future != null)
+            future.get();
+    }
+
 
     @Override
     protected void close() {

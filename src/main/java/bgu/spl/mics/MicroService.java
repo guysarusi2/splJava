@@ -169,17 +169,19 @@ public abstract class MicroService implements Runnable {
             try {
                 Message m = MessageBusImpl.getInstance().awaitMessage(this);
                 try {
+                    // TODO: 15/12/2020 remove internal try and catch?
                     messageCallbackMap.get(m.getClass()).call(m);
                 } catch (Exception e) {
-                    e.printStackTrace();
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
         MessageBusImpl.getInstance().unregister(this);
     }
 
+    /**
+     * This method used by the Microservice to register it terminate time to the Diary.
+     */
     protected abstract void close();
 }
 

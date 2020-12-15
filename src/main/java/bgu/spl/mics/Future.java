@@ -78,9 +78,11 @@ public class Future<T> {
     public T get(long timeout, TimeUnit unit) {
         if (!isDone) {
             synchronized (this) {
-                try {
-                    wait(unit.toMillis(timeout));
-                } catch (InterruptedException e) {
+                if (!isDone) {
+                    try {
+                        wait(unit.toMillis(timeout));
+                    } catch (InterruptedException e) {
+                    }
                 }
             }
         }
